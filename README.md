@@ -1,7 +1,1 @@
-# ejercicio-alumno
-
-## Integrantes
-
-- integrante1 (usuario github)
-- integrante2 (usuario github)
-...
+Parciales del paradigma funcional de la cursada de PdeP 2024
