@@ -1,86 +1,132 @@
-module FMI where 
-    -- Punto 1: (a y b)
+-- https://docs.google.com/document/d/1l9UjDqVhLdeiON6rtXf7EwGU5JZvN2TWu5AJQzVmSwE/edit
+-- https://github.com/uqbar-project/parcial-fmi-haskell
 
-    type Recurso = String
-    type Recursos = [String]
+module Library where
+import PdePreludat
 
-    data Pais = UnPais {
-        perCapita :: Int,
-        activosPublicos :: Int,
-        activosPrivados :: Int,
-        recursos :: Recursos,
-        deudaConFMI :: Int
-    }
+-- Parcial FMI
+-- Punto 1 - 2 puntos global
+-- 1.a Representar al TAD Pais 
+type Recurso = String
 
-    namibia :: Pais
-    namibia = UnPais 4140 4000000 650000 ["mineria", "ecoturismo"] 50
+data Pais = Pais {
+    ingresoPerCapita :: Number,
+    activosPublico :: Number,
+    activosPrivado :: Number,
+    recursosNaturales :: [Recurso],
+    deuda :: Number
+} deriving (Eq, Show)
 
-    -- Punto 2:
+-- 1.b Generar al pais Namibia
+namibia :: Pais
+namibia = Pais 4140 400000 650000 ["Mineria", "Ecoturismo"] 50
 
-    type Estrategia = Pais -> Pais
+-- Punto 2 - 4 puntos
+-- Prestarle plata
+type Estrategia = Pais -> Pais
 
-    prestarN :: Int -> Estrategia
-    prestarN cantidad pais = pais {deudaConFMI = deudaConFMI pais + calcularPorcentaje cantidad 150}
+prestarPlata :: Number -> Estrategia
+prestarPlata cuanto pais = pais {
+    deuda = deuda pais + cobrarNumberereses cuanto
+}
 
-    calcularPorcentaje :: Int -> Int -> Int
-    calcularPorcentaje cantidad porcentaje = (cantidad * porcentaje) `div` 100
+cobrarNumberereses :: Number -> Number
+cobrarNumberereses cuanto = cuanto * 1.5
 
-    reducirPuestos :: Int -> Estrategia
-    reducirPuestos cantPuestos pais = pais {activosPublicos = activosPublicos pais - cantPuestos, perCapita = perCapita pais + cuantoAumenta cantPuestos}
+-- 2.b 
+-- Reducir x puestos de trabajo del sector publico
+reducirPuestos :: Number -> Estrategia
+reducirPuestos cantidadPuestos pais = pais {
+    activosPublico = activosPublico pais - cantidadPuestos,
+    ingresoPerCapita = ingresoPerCapita pais * (1 - reduccionIngreso cantidadPuestos)
+}
 
-    cuantoAumenta :: Int -> Int
-    cuantoAumenta cantPuestos
-        | cantPuestos > 100 = calcularPorcentaje cantPuestos 20
-        | otherwise = calcularPorcentaje cantPuestos 15
+reduccionIngreso :: Number -> Number
+reduccionIngreso cantidadPuestos | cantidadPuestos > 100 = 0.2
+                                 | otherwise             = 0.15
 
-    sacarleUnRecurso :: Recurso -> Estrategia
-    sacarleUnRecurso empresa pais =  pais {recursos = filter (/= empresa) (recursos pais), deudaConFMI = deudaConFMI pais - 2}
+-- 2.c 
+-- Darle a una empresa afin la explotacion de alguno de los recursos
+explotar :: Recurso -> Estrategia
+explotar recurso pais = pais {
+    recursosNaturales = quitarRecurso recurso $ recursosNaturales pais,
+    deuda = deuda pais - 20
+}
 
-    establecerBlindaje :: Estrategia
-    establecerBlindaje pais =  (prestarN (productoBrutoInterno pais) . sacarActivosPublicos 500) pais
+quitarRecurso :: Recurso -> [Recurso] -> [Recurso]
+quitarRecurso recurso = filter (/= recurso)
 
-    productoBrutoInterno :: Pais -> Int
-    productoBrutoInterno pais = perCapita pais * (activosPublicos pais + activosPrivados pais)
+-- 2.d
+blindaje :: Estrategia
+blindaje pais = (prestarPlata (pbi pais * 0.5) . reducirPuestos 500) pais
 
-    sacarActivosPublicos :: Int -> Pais -> Pais
-    sacarActivosPublicos activosNuevos pais = pais {activosPublicos = activosPublicos pais - activosNuevos}
+pbi :: Pais -> Number
+pbi pais = ingresoPerCapita pais * poblacionActiva pais
+-- el fromNumberegral no es importante
 
-    -- Punto 3: (a y b)
+poblacionActiva :: Pais -> Number
+poblacionActiva pais = activosPrivado pais + activosPublico pais
 
-    type Receta = [Estrategia]
+-- Punto 3 - 2 puntos
+-- a) Modelar una receta que consista en prestar 200 millones, y darle a una empresa X
+-- la explotación de la Minería de un país.
+type Receta = [Estrategia]
 
-    recetaInventada :: Receta
-    recetaInventada = [prestarN 200, sacarleUnRecurso "Mineria"]
+receta :: Receta
+receta = [prestarPlata 2000, explotar "Mineria"]
 
-    aplicarReceta :: Pais -> Receta -> Pais
-    aplicarReceta = foldl (\pais estrategia -> estrategia pais)
+-- b) Aplicar la receta del punto 3.a al país Namibia (creado en el punto 1.b). 
+-- Justificar cómo se logra el efecto colateral.
+aplicarReceta :: Receta -> Pais -> Pais
+-- opción con foldl + lambda
+-- aplicarReceta receta pais = foldl (\pais estrategia -> estrategia pais) pais receta
+-- opción con foldr + $
+aplicarReceta receta pais = foldr ($) pais receta
 
-    -- Punto 4: (a, b y c)
+-- Punto 4 - 3 puntos
+-- 4.a) Conocer los países que pueden zafar, que son aquellos que tienen "Petróleo" entre sus riquezas naturales.
+puedenZafar :: [Pais] -> [Pais]
+puedenZafar = filter $ elem "Petroleo" . recursosNaturales
 
-    type Paises = [Pais]
+-- 4.b) Dada una lista de países, saber el total de deuda que el FMI tiene a su favor.
+totalDeuda :: [Pais] -> Number
+totalDeuda = foldr ((+) . deuda) 0
 
-    averiguarQuienZafa :: Paises -> Paises
-    averiguarQuienZafa = filter tienePetroleo
+-- Punto 5 - 2 puntos
+-- dado un país y una lista de recetas, saber si la lista de recetas está ordenada de “peor” a “mejor”, 
+-- en base al siguiente criterio: si aplicamos una a una cada receta, el PBI del país va de menor a mayor
+estaOrdenado :: Pais -> [Receta] -> Bool
+estaOrdenado pais [receta] = True
+estaOrdenado pais (receta1:receta2:recetas)
+     = revisarPBI receta1 pais <= revisarPBI receta2 pais && estaOrdenado pais (receta2:recetas)
+     where revisarPBI receta = pbi . aplicarReceta receta
 
-    tienePetroleo :: Pais -> Bool
-    tienePetroleo pais = "Petroleo" `elem` recursos pais
+-- Punto 6 - 1 punto
+-- Si un país tiene infinitos recursos naturales, modelado con esta función
+recursosNaturalesInfinitos :: [String]
+recursosNaturalesInfinitos = "Energia" : recursosNaturalesInfinitos
 
-    deudaTotalDeLosPaises :: Paises -> Int
-    deudaTotalDeLosPaises = sum . map deudaConFMI
+--    a) ¿qué sucede con la función 4a? 
+--    b) ¿y con la 4b?
+--    Justifique ambos puntos relacionándolos con algún concepto.
+pruebaInfinita1 = puedenZafar [namibia, Pais 1 1 1 recursosNaturalesInfinitos 1]
+--              no termina nunca, porque quiere buscar "Mineria" entre los recursos
+pruebaInfinita2 = totalDeuda [namibia, Pais 1 1 1 recursosNaturalesInfinitos 1]
+--              se puede porque al no evaluar los recursos solamente suma deuda
+-- relacionado con evaluacion diferida, solo se evalua lo que se necesita
 
-    -- Punto 5: 
+-- Evaluacion
+-- **********
+-- 14     = 10
+-- 13     =  9
+-- 12, 11 =  8
+-- 10     =  7
+--  8, 9  =  6
+--  7     = Revision
+--  6     =  3
+--  5..0  =  2
 
-    type Recetas = [Receta]
-
-    saberSiVaAscendete :: Recetas -> Pais -> Bool
-    saberSiVaAscendete = estaOrdenado
-
-    estaOrdenado :: Recetas -> Pais -> Bool
-    estaOrdenado [] _  = True
-    estaOrdenado [_] _ = True
-    estaOrdenado (receta1:receta2:recetas) pais
-        | esMenorElPBI receta1 receta2 pais = estaOrdenado (receta2:recetas) pais
-        | otherwise = False
-
-    esMenorElPBI :: Receta -> Receta -> Pais -> Bool
-    esMenorElPBI primeraReceta segundaReceta pais = productoBrutoInterno (aplicarReceta pais primeraReceta) < productoBrutoInterno (aplicarReceta pais segundaReceta)
+f :: Ord p => ((a, Bool) -> b) -> (b -> p) -> p -> [a] -> p
+f x y h (c:cs) | (y . x) (c, True) > h = f x y h cs
+               | otherwise             = h
+               

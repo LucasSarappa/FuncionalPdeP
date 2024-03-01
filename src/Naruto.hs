@@ -1,0 +1,1 @@
+-- https://github.com/Yerilin/Parciales-PDP/blob/main/Haskell/Ninjas%20(Naruto)/NarutoShipdepen.hs

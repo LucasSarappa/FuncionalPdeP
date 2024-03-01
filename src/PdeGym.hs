@@ -1,0 +1,2 @@
+-- https://github.com/Yerilin/Parciales-PDP/tree/main/Haskell/PdeGym/src
+-- https://github.com/MarcoPiatti/pdep-2021/blob/main/Funcional%20-%20Haskell/PDPGYM%20V2.hs

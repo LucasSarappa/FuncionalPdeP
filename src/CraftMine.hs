@@ -1,4 +1,4 @@
-{- PARCIAL CRAFTMINE
+{- PARCIAL CRAFTMINE:
 
 En este videojuego, existen personajes cuyo objetivo es minar materiales y construir nuevos objetos.
 
@@ -68,123 +68,161 @@ necesario el personaje se va con las manos vacías y sigue como antes.
     3. ¿Qué pasa al intentar minar en un bioma con infinitos materiales? Mostrar ejemplos donde con diferentes herramientas o personajes sucedan diferentes cosas. Justificar. 
 
 -}
+data Jugador = UnJugador {
+    nombre :: String,
+    puntaje :: Int,
+    inventario :: [Material]
+} deriving Show
 
-module CraftMine where
+-- PARTE 1
 
-    type Material = String
-    type Materiales = [String]
+type Material = String
 
-    data Personaje = UnPersonaje {
-        nombre :: String,
-        puntaje :: Int,
-        inventario :: Materiales
-    } deriving Show
+data Receta = Receta {
+    materiales :: [Material],
+    tiempo :: Int,
+    resultado :: Material
+}
 
-    -- Craft:
+fogata,fosforo, madera,polloAsado,pollo,sueter,hielo,lobos,iglues :: Material
+fogata = "fogata"
+fosforo = "fosforo"
+madera = "madera"
+pollo = "pollo"
+polloAsado = "pollo asado"
+sueter = "sueter"
+hielo = "hielo"
+iglues = "iglues"
+lobos = "lobos"
 
-    -- Punto 1:
+intentarCraftear :: Receta -> Jugador ->  Jugador
+intentarCraftear receta jugador
+    | tieneMateriales receta jugador  =  craftear receta jugador 
+    | otherwise = alterarPuntaje (-100) jugador 
 
-    data Receta = UnaReceta {
-        nombreDelMaterial :: Material,
-        materialesNecesarios :: Materiales,
-        segundosEnCraftear :: Int
-    } deriving Show
+craftear :: Receta -> Jugador -> Jugador
+craftear receta = alterarPuntaje (10*tiempo receta).agregarMaterial (resultado receta).quitarMateriales  (materiales receta)
 
-    fogata, polloAsado, sueter :: Receta
-    fogata = UnaReceta "fogata" ["madera", "fosforo"] 10
-    polloAsado = UnaReceta "pollo asado" ["fogata", "pollo"] 300
-    sueter = UnaReceta "sueter" ["lana", "agujas", "tintura"] 600
 
-    type Craftear = Receta -> Personaje -> Personaje
+-- Auxiliares
+tieneMateriales :: Receta -> Jugador -> Bool
+tieneMateriales  receta jugador = all (tieneMaterial jugador) (materiales receta)
 
-    craftearObjeto :: Craftear
-    craftearObjeto receta personaje
-        | comprobarSiTieneLosMateriales (materialesNecesarios receta) (inventario personaje) = agregarCambios (personajeSinMaterialesPorLaReceta personaje (materialesNecesarios receta)) receta
-        | otherwise = cambiarPuntaje (-100) personaje
+tieneMaterial :: Jugador -> Material -> Bool
+tieneMaterial jugador material = elem material (inventario jugador)
 
-    comprobarSiTieneLosMateriales :: Materiales -> Materiales -> Bool
-    comprobarSiTieneLosMateriales materialesDeLaReceta materialesDelJugador = all (`elem` materialesDelJugador) materialesDeLaReceta
+agregarMaterial :: Material -> Jugador -> Jugador
+agregarMaterial material jugador = jugador {inventario = material:inventario jugador }
 
-    cambiarPuntaje :: Int -> Personaje -> Personaje
-    cambiarPuntaje nuevoPuntaje personaje = personaje {puntaje = puntaje personaje + nuevoPuntaje}
+quitarMateriales :: [Material] -> Jugador -> Jugador
+quitarMateriales materiales jugador = jugador{inventario = foldr quitarUnaVez (inventario jugador) materiales}
 
-    personajeSinMaterialesPorLaReceta :: Personaje -> Materiales -> Personaje
-    personajeSinMaterialesPorLaReceta = foldl sacarMaterialNecesarioDelInventario
+quitarUnaVez:: Eq a => a -> [a] -> [a]
+quitarUnaVez _ [] = []
+quitarUnaVez material (m:ms)  
+ | material == m = ms
+ | otherwise = m:quitarUnaVez material ms 
 
-    sacarMaterialNecesarioDelInventario :: Personaje -> Material -> Personaje
-    sacarMaterialNecesarioDelInventario personaje materialNecesario = personaje {inventario = tomarUnMaterialNecesario materialNecesario (inventario personaje)}
+alterarPuntaje :: Int -> Jugador ->  Jugador
+alterarPuntaje n jugador  = jugador {puntaje = puntaje jugador + n}
 
-    tomarUnMaterialNecesario :: Material -> Materiales -> Materiales
-    tomarUnMaterialNecesario _ [] = []
-    tomarUnMaterialNecesario materialNecesario (material:materiales)
-        | materialNecesario == material = materiales
-        | otherwise = material : tomarUnMaterialNecesario materialNecesario materiales
+{-
+Ejemplos:
+ghci> intentarCraftear recetaPollo maria
+UnJugador {nombre = "maria", puntaje = 4000, inventario = ["pollo asado","pollo","sueter"]}
+-}
 
-    agregarCambios :: Personaje -> Receta -> Personaje
-    agregarCambios personaje receta = (cambiarPuntaje (10 * segundosEnCraftear receta) . agregarMaterial (nombreDelMaterial receta)) personaje
+recetaFogata :: Receta
+recetaFogata = Receta [madera, fosforo] 10 fogata
 
-    -- Punto 2: (a, b y c)
+recetaPollo :: Receta
+recetaPollo = Receta [fogata, pollo] 300 polloAsado
 
-    type Recetas = [Receta]
+juan, maria :: Jugador
+juan = UnJugador "juan" 20 [madera, fosforo, pollo, sueter]
+maria = UnJugador "maria" 1000 [fogata, pollo, pollo, sueter]
 
-    recetasQueDuplicanPuntaje :: Recetas -> Personaje -> Recetas
-    recetasQueDuplicanPuntaje recetas jugador = filter (siDuplicaPuntaje jugador) recetas
+unasRecetas :: [Receta]
+unasRecetas = [recetaFogata, recetaPollo]
 
-    siDuplicaPuntaje :: Personaje -> Receta -> Bool
-    siDuplicaPuntaje jugador receta  = puntaje (craftearObjeto receta jugador) >= 2 * puntaje jugador
+crafteablesDuplicadores :: [Receta] -> Jugador -> [Material]
+crafteablesDuplicadores recetas jugador = map resultado (filter (duplicaLuegoDeCraftear jugador) recetas)
 
-    craftearTodasLasRecetas :: Recetas -> Personaje -> Personaje
-    craftearTodasLasRecetas recetas jugador = foldl (flip craftearObjeto) jugador recetas
+duplicaLuegoDeCraftear ::  Jugador -> Receta -> Bool
+duplicaLuegoDeCraftear jugador receta = puntaje (intentarCraftear receta jugador ) > 2 * puntaje jugador
 
-    averiguarSiConvieneCraftearAlReves :: Recetas -> Personaje -> Bool
-    averiguarSiConvieneCraftearAlReves recetas jugador = puntaje (craftearTodasLasRecetas recetas jugador) < puntaje (craftearTodasLasRecetas (reverse recetas) jugador)
+craftearSucesivamente :: Jugador -> [Receta] ->  Jugador
+craftearSucesivamente = foldr intentarCraftear
 
-    -- Mine
+masPuntosAlReves ::  Jugador -> [Receta] -> Bool
+masPuntosAlReves jugador listaDeRecetas = puntaje (craftearSucesivamente jugador (reverse listaDeRecetas)) > puntaje (craftearSucesivamente jugador listaDeRecetas)
 
-    -- Punto 1:
+{-
+Ejemplos:
+ghci> intentarCraftear recetaPollo maria
+UnJugador {nombre = "maria", puntaje = 4000, inventario = ["pollo asado","pollo","sueter"]}
 
-    type Herramienta = Bioma -> Material
-    type Condicion = Materiales -> Bool
+ghci> crafteablesDuplicadores unasRecetas maria
+["pollo asado"]
+ghci> crafteablesDuplicadores unasRecetas juan
+["fogata"]
 
-    data Bioma = UnBioma {
-        nombreDeBioma :: String,
-        materialesDelBioma :: Materiales,
-        condicionesParaMinar :: Condicion
-    }
+ghci> craftearSucesivamente juan (reverse unasRecetas)
+UnJugador {nombre = "juan", puntaje = 3120, inventario = ["pollo asado","sueter"]}
+ghci> craftearSucesivamente juan unasRecetas
+UnJugador {nombre = "juan", puntaje = 20, inventario = ["fogata","pollo","sueter"]}
 
-    artico :: Bioma
-    artico = UnBioma "Artico" ["iglu", "hielo", "agua congelada"] (tenerElementoEnElInventario "sueter")
+ghci> masPuntosAlReves juan unasRecetas
+True
+-}
 
-    tenerElementoEnElInventario :: String -> Condicion
-    tenerElementoEnElInventario elementoRequirido materiales = elementoRequirido `elem` materiales
+-- PARTE 2
 
-    hacha :: Herramienta
-    hacha bioma = last (materialesDelBioma bioma)
 
-    espada :: Herramienta
-    espada bioma = head (materialesDelBioma bioma)
+data Bioma = UnBioma{
+    materialesPresentes :: [Material],
+    materialNecesario :: Material
+}
 
-    pico :: Int -> Herramienta
-    pico posicion bioma = obtenerMaterialEnBasePosicion posicion (materialesDelBioma bioma)
+biomaArtico :: Bioma
+biomaArtico = UnBioma [hielo, iglues, lobos] sueter
 
-    obtenerMaterialEnBasePosicion :: Int -> Materiales -> Material
-    obtenerMaterialEnBasePosicion posicion materialesDelBioma = materialesDelBioma !! posicion
+type Herramienta = [Material] -> Material
 
-    minar :: Herramienta -> Bioma -> Personaje -> Personaje
-    minar herramienta bioma jugador
-        | condicionesParaMinar bioma (inventario jugador) = (cambiarPuntaje 50 . agregarMaterial (herramienta bioma)) jugador
-        | otherwise = jugador
+hacha :: Herramienta
+hacha = last
 
-    agregarMaterial :: Material -> Personaje -> Personaje
-    agregarMaterial materialNuevo personaje = personaje {inventario = materialNuevo : inventario personaje}
+espada :: Herramienta
+espada = head 
 
-    -- Punto 2 (a y b)
+pico :: Int -> Herramienta
+pico = flip (!!) 
+    
+posicionMitad :: Herramienta
+posicionMitad lista = pico (length lista `div` 2) lista
 
-    pala :: Herramienta
-    pala bioma = (obtenerMaterialEnBasePosicion (length (materialesDelBioma bioma) `div` 2) . materialesDelBioma) bioma
+minar :: Herramienta -> Bioma -> Jugador  -> Jugador
+minar herramienta bioma jugador 
+    | tieneMaterial jugador (materialNecesario bioma)  = agregarMaterial (herramienta (materialesPresentes bioma)) (alterarPuntaje 50 jugador)
+    | otherwise = jugador
+{-
+EJEMPLOS DE USO DE HERRAMIENTAS:
 
-    azada :: String -> Herramienta
-    azada materialBuscado bioma = head (filter (\materialDelBioma -> materialBuscado == materialDelBioma) (materialesDelBioma bioma)) -- Expresion lambda
+ghci> minar hacha biomaArtico juan
+UnJugador {nombre = "juan", puntaje = 70, inventario = ["lobos","madera","fosforo","pollo","sueter"]}
 
-    azada' :: String -> Herramienta
-    azada' materialBuscado bioma = head (filter (==materialBuscado) (materialesDelBioma bioma)) -- Se puede hacer mejor de esta forma 
+ghci> minar (pico 1) biomaArtico juan
+UnJugador {nombre = "juan", puntaje = 70, inventario = ["iglues","madera","fosforo","pollo","sueter"]}
+
+-}
+
+-- PARTE 3
+
+listaPollosInfinitos :: [String]
+listaPollosInfinitos = pollo : listaPollosInfinitos
+
+{-
+> minar espada (UnBioma listaPollosInfinitos sueter) juan
+UnJugador {nombre = "juan", puntaje = 1050, inventario = ["pollo","madera","fosforo","pollo crudo","sueter"]}
+
+-}

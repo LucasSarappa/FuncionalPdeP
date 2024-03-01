@@ -1,0 +1,2 @@
+-- https://docs.google.com/document/d/1ka4CJhZJBNtUOS7AbvTL1qTJnHGOIihdEp92mYfKzpo/edit#heading=h.p9zjvnpkrbup
+-- https://github.com/pdep-mit/ejemplos-de-clase-haskell/blob/2018/clase7.hs

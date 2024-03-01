@@ -1,0 +1,5 @@
+-- https://docs.google.com/document/d/18wXku4XZ2gZJtLqbx2DG13PZQwYdjsfT0D40cn2RwoI/edit#heading=h.a2966llxctpk
+-- https://github.com/marciondg/2020-f-Hullabalooza
+-- https://github.com/caroblanco/PDP_parciales_2020/tree/master/HASKELL-FUNCIONAL/hullabalooza
+-- https://github.com/ConstanzaGonzalez/Hullabalooza
+-- https://github.com/matiasrizzatobusta/parcialModelo-f-Hullabalooza

@@ -1,0 +1,1 @@
+-- https://github.com/Yerilin/Parciales-PDP/tree/main/Haskell/KARRRS

@@ -1,0 +1,1 @@
+-- https://github.com/caroblanco/PDP_parciales_2020/tree/master/HASKELL-FUNCIONAL/talentoAyudantino

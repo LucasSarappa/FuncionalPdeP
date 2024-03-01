@@ -1,0 +1,2 @@
+-- https://github.com/francoparente/PdP/tree/main/funcional/Parciales/Currycoin
+-- https://github.com/MateoMichini1/Pdep_ParcialFuncional

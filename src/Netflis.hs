@@ -1,4 +1,8 @@
+-- https://github.com/Lucssiano/Paradigma-Funcional-Haskell/blob/main/Parciales/parcialNetflis.hs
+
 {-
+-- Aca hay otra variante parecida que esta ok: https://github.com/haskell-uqbar/Integrador-Netflis
+-- Este esta la foto en algun lado
 Netflis: Sacando series y películas buenas del catálogo desde 1997.
  
 

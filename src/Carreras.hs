@@ -1,5 +1,5 @@
 {-
-
+Otra solucion: https://github.com/MarcoPiatti/pdep-2021/blob/main/Funcional%20-%20Haskell/Carreras.hs
 Carreras: 
 
 Queremos armar un programa que nos permita simular unas fantásticas carreras de autos en las cuales cada vehículo avanza tan rápido como puede para consagrarse campeón, 

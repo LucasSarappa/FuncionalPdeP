@@ -1,0 +1,1 @@
+-- https://github.com/btorrico/Practica-Paradigma-Funcional/tree/main/Strategy%20Civilization

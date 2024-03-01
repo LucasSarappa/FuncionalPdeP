@@ -1,0 +1,1 @@
+-- https://github.com/MarcoPiatti/pdep-2021/blob/main/Funcional%20-%20Haskell/TP-Monopoly.hs

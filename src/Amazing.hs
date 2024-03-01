@@ -1,3 +1,6 @@
+
+-- Otra solucion: https://github.com/sahikalu/PdP_SAK/tree/main/FUNCIONAL-HASKELL/recuperatorioParcialSahira
+
 {- 
 En este contexto tan atípico la gente buscó nuevas maneras de divertirse, pero cuando nada parece funcionar siempre están los viejos y confiables libros. 
 A raíz del renovado interés de la gente por la lectura, la conocida empresa Amazin' nos pidió que le ayudemos a desarrollar parte de sus funcionalidades.

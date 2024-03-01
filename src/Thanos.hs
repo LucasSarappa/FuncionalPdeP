@@ -1,0 +1,2 @@
+-- https://github.com/Lucssiano/Paradigma-Funcional-Haskell/blob/main/Parciales/parcialThanos.hs
+-- https://github.com/caroblanco/PDP_parciales_2020/tree/master/HASKELL-FUNCIONAL/thanos

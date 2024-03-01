@@ -1,0 +1,2 @@
+-- https://github.com/MarcoPiatti/pdep-2021/blob/main/Funcional%20-%20Haskell/Verano.hs
+-- https://github.com/nachovilla123/Paradigmas/blob/main/FUNCIONAL/Parciales%20haskell/vacacionesVerano.hs

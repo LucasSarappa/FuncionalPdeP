@@ -1,0 +1,1 @@
+-- https://github.com/icoluccio/solucion-parcial-astronautas/blob/master/parcial.hs

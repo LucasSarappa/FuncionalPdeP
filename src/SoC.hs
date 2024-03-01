@@ -1,0 +1,2 @@
+-- https://docs.google.com/document/d/1aw0XjR0ciVLPbrBrY6AknYWiCHSzftvMrES0IKm5ErM/edit
+-- https://github.com/DanteBonino/haskellSummerCodeParcial

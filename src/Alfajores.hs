@@ -1,3 +1,8 @@
+-- https://github.com/Lucssiano/Paradigma-Funcional-Haskell/blob/main/Parciales/parcialAlfajores.hs
+
+
+
+--https://github.com/FedericoEncinazSayago/Enciclopedia-De-Pdep/blob/main/Haskell/Parciales/ParcialAlfajores.hs
 import Data.List (isInfixOf)
 
 module Alfajores where

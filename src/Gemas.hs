@@ -1,0 +1,2 @@
+-- https://docs.google.com/document/d/1BepktcQsT2GVsduUq8ldi6JXZ4u3A9cjyc-cxZcdQBE/edit
+-- https://github.com/SantiBoero1/Parciales-PdeP/blob/d0b8f9d1197b39e09943522d6c05d102deaffdd9/Haskell/Gemas.hs#L4

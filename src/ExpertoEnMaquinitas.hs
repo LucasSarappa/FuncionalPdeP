@@ -1,0 +1,4 @@
+-- https://docs.google.com/document/d/1eQAh2J0jUbSWj5TWWMDdu6DNIw4q5ilK7n_aO6kUP2U/edit#heading=h.mdw7g6gcz1ft
+-- https://github.com/abrildelburgo/ExpertosEnMaquinitas
+-- https://github.com/SantiBoero1/Parciales-PdeP/blob/d0b8f9d1197b39e09943522d6c05d102deaffdd9/Haskell/maquinitas.hs#L4
+-- https://github.com/matiasrizzatobusta/parcialModelo-f-ExpertosEnMaquinitas

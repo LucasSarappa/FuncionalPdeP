@@ -1,0 +1,4 @@
+-- https://github.com/marciondg/2020-f-ratonesYHierbas/tree/master/src
+-- https://github.com/caroblanco/PDP_parciales_2020/tree/master/HASKELL-FUNCIONAL/ratonesYhierbas
+-- https://github.com/ConstanzaGonzalez/Ratones-y-Hierbas
+-- https://github.com/matiasrizzatobusta/parcialModelo-f-Ratones-y-hierbas

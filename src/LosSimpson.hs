@@ -1,5 +1,5 @@
 {-
-Los Simpson
+Los Simpson: https://github.com/FedericoEncinazSayago/Enciclopedia-De-Pdep/blob/main/Haskell/Parciales/ParcialLosSimpson.hs
 
 1: Actividades de los personajes
 Existen diferentes personajes de Los Simpson. De cada uno se sabe su nombre, el dinero que tiene y su felicidad (que puede ser mayor o igual a cero pero nunca negativa). 
