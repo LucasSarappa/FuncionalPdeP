@@ -1,5 +1,5 @@
 {-
-Los Simpson: https://github.com/FedericoEncinazSayago/Enciclopedia-De-Pdep/blob/main/Haskell/Parciales/ParcialLosSimpson.hs
+Los Simpson:
 
 1: Actividades de los personajes
 Existen diferentes personajes de Los Simpson. De cada uno se sabe su nombre, el dinero que tiene y su felicidad (que puede ser mayor o igual a cero pero nunca negativa). 
@@ -32,114 +32,114 @@ Construir una lista infinita de actividades y mostrar al menos dos ejemplos de a
 
 module LosSimpson where
 
-    -- Punto 1: Actividades de los personajes
+    -- 1: Actividades de los personajes
 
-    type Actividad = Personaje -> Personaje
+data Personaje = Personaje {
+    nombre :: String,
+    dinero :: Int,
+    felicidad :: Int
+} deriving Show
 
-    data Personaje = UnPersonaje {
-        nombre :: String,
-        felicidad :: Int,
-        dinero :: Int
-    } deriving Show
+-- Personajes
+homero :: Personaje
+homero = Personaje "Homero" 100 100
+lisa :: Personaje
+lisa = Personaje "Lisa" 100 100
+skinner :: Personaje
+skinner = Personaje "Skinner" 100 100
+burns :: Personaje
+burns = Personaje "Burns" 100000 100
+bart :: Personaje
+bart = Personaje "Bart" 6 100
 
-    -- Definimos funciones auxiliares para los personajes:
+-- Actividades
+type Actividad = Personaje -> Personaje 
 
-    actualizarFelicidad :: Int -> Personaje -> Personaje
-    actualizarFelicidad nuevoNivel personaje = personaje {felicidad = comoQuedaElNivel (felicidad personaje) nuevoNivel}
+escuela :: Actividad
+escuela personaje
+    | nombre personaje == "Lisa" = modificarFelicidad 20 personaje
+    | otherwise = modificarFelicidad (-20) personaje
 
-    comoQuedaElNivel :: Int -> Int -> Int
-    comoQuedaElNivel actualNivel variacion
-        | actualNivel + variacion > 0 = actualNivel + variacion
-        | otherwise = 0
+-- Ejemplos de consulta: 
+-- escuela bart 
+-- Personaje {nombre = "Bart", dinero = 100, felicidad = 80}
+-- escuela lisa 
+-- Personaje {nombre = "Lisa", dinero = 100, felicidad = 120}
 
-    actualizarDineroDisponible :: Int -> Personaje -> Personaje
-    actualizarDineroDisponible nuevoNivel personaje = personaje {dinero = dinero personaje + nuevoNivel}
+comerDonas :: Int -> Actividad
+comerDonas cantidad = modificarDinero (-10) . modificarFelicidad (10 * cantidad)
 
-    -- Definimos las actividades:
+-- Ejemplo de consulta: 
+-- comerDonas 12 homero 
+-- Personaje {nombre = "Homero", dinero = 90, felicidad = 220}
 
-    irEscuelaElemental :: Actividad
-    irEscuelaElemental personaje
-        | siNoEsTal "Lisa Simpson" personaje = actualizarFelicidad (-20) personaje
-        | otherwise = actualizarFelicidad 20 personaje
+trabajar :: String -> Actividad
+trabajar trabajo = modificarDinero (length trabajo)
 
-    siNoEsTal :: String -> Personaje -> Bool
-    siNoEsTal nombreDeLaPersona personaje = nombre personaje /= nombreDeLaPersona
+-- Ejemplo de consulta: 
+-- trabajar "planta nuclear" homero 
+-- Personaje {nombre = "Homero", dinero = 114, felicidad = 100}
 
-    comerDona :: Actividad
-    comerDona = actualizarFelicidad 10 . actualizarDineroDisponible (-10)
+trabajarDeDirector :: Actividad
+trabajarDeDirector = trabajar "Escuela elemental". escuela
 
-    comerUnaCantidadDeDonas :: Int -> Actividad
-    comerUnaCantidadDeDonas cantDeDonasComidas personaje
-        | cantDeDonasComidas >= 0 = comerUnaCantidadDeDonas (cantDeDonasComidas - 1) (comerDona personaje)
-        | otherwise = personaje
+-- Ejemplo de consulta: 
+-- trabajarDeDirector skinner 
+-- Personaje {nombre = "Skinner", dinero = 117, felicidad = 80}
 
-    irAlTrabajo :: String -> Actividad
-    irAlTrabajo trabajo = actualizarDineroDisponible (cuantoGano trabajo)
 
-    cuantoGano :: String -> Int
-    cuantoGano = length
+modificarFelicidad :: Int -> Actividad
+modificarFelicidad cantidad personaje 
+ = personaje {felicidad = max 0 (felicidad personaje + cantidad)}
 
-    serDirector :: Actividad
-    serDirector = irEscuelaElemental . irAlTrabajo "Escuela elemental"
+modificarDinero ::  Int -> Actividad
+modificarDinero cantidad personaje 
+ = personaje {dinero = dinero personaje + cantidad}
 
-    -- Definimos personajes:
 
-    homero, skinner, lisa :: Personaje
+-- 2: Logros
 
-    homero = UnPersonaje "Homero Simpson" 50 100
-    skinner = UnPersonaje "Skinner" 10 500
-    lisa = UnPersonaje "Lisa Simpson" 100 0
+type Logro = Personaje -> Bool
 
-    -- Ejemplos de invocacion por terminal:
+millonario :: Logro
+millonario personaje = dinero personaje > dinero burns
 
-    {-
-        Invocacion: ghci> serDirector skinner 
+alegrarse :: Int -> Logro
+alegrarse nivel personaje = felicidad personaje > nivel
 
-        Resultado: ghci> UnPersonaje {nombre = "Skinner", felicidad = 0, dinero = 517}
-    -}
+verKrusty :: Logro
+verKrusty personaje = dinero personaje >= 10
 
-    {-
-        Invocacion: ghci> comerUnaCantidadDeDonas 12 homero
+-- A)
+decisiva :: Actividad -> Logro -> Personaje -> Bool
+decisiva actividad logro personaje = not (logro personaje) && logro (actividad personaje)
 
-        Resultado: UnPersonaje {nombre = "Homero Simpson", felicidad = 180, dinero = -30}
-    -}
+-- Ejemplos de consulta: 
+-- decisiva (trabajar "mafia") verKrusty bart 
+-- True
+-- decisiva (trabajar "planta nuclear") millonario homero 
+-- False
 
-    -- Punto 2: Logros
+-- B)
+primeraDecisiva :: Personaje -> Logro -> [Actividad] -> Personaje
+primeraDecisiva personaje _ [] = personaje
+primeraDecisiva personaje logro (actividad:actividades)
+    | decisiva actividad logro personaje = actividad personaje
+    | otherwise = primeraDecisiva personaje logro actividades
 
-    type Logro = Personaje -> Bool
+-- Ejemplos de consulta: 
+-- primeraDecisiva bart verKrusty [trabajar "no", trabajar "mafia"] 
+-- Personaje {nombre = "Bart", dinero = 11, felicidad = 100}
+-- primeraDecisiva homero millonario [trabajar "mafia", trabajar "planta nuclear"] 
+-- Personaje {nombre = "Homero", dinero = 100, felicidad = 100}
 
-    -- Definimos el Sr.Burns:
+-- C)
+infinitasActividades :: [Actividad]
+infinitasActividades = escuela : infinitasActividades
 
-    srBurns :: Personaje
-    srBurns = UnPersonaje "Sr.Burns" 0 1000000000
-
-    -- Definimos los logros:
-
-    serMillonario :: Logro
-    serMillonario personaje = dinero personaje > dinero srBurns
-
-    alegrarse :: Int -> Logro
-    alegrarse nivelFelicidadDeseado personaje = felicidad personaje > nivelFelicidadDeseado
-
-    irAlProgramaDeKrosti :: Logro
-    irAlProgramaDeKrosti personaje = dinero personaje >= 10
-
-    -- Funciones auxiliares para los logros:
-
-    unaActividadResultaDecisivaParaLograrUnLogro :: Actividad -> Logro -> Personaje -> Bool
-    unaActividadResultaDecisivaParaLograrUnLogro actividad logro personaje
-        | logro personaje = False
-        | otherwise = (logro . actividad) personaje
-
-    type Actividades = [Actividad]
-
-    encontrarLaActivadadDecisivaParaLograrElLogro :: Actividades -> Logro -> Personaje -> Personaje
-    encontrarLaActivadadDecisivaParaLograrElLogro [] logro personaje = personaje
-    encontrarLaActivadadDecisivaParaLograrElLogro (actividad : actividades) logro personaje
-        | unaActividadResultaDecisivaParaLograrUnLogro actividad logro personaje = actividad personaje
-        | otherwise = encontrarLaActivadadDecisivaParaLograrElLogro actividades logro personaje
-
-    -- Definimos lista infita de actividades:
-
-    hacerActividadesInfinitas :: Actividades -> Actividades
-    hacerActividadesInfinitas actividades = actividades ++ hacerActividadesInfinitas actividades
+-- Ejemplos de consulta:
+-- primeraActividadDecisiva lisa (alegrarse 105) listaInfinitaActividades 
+-- Personaje {nombre = "Lisa", dinero = 100, felicidad = 120}
+-- Por evaluación diferida, encuentra la primera que es decisiva y la aplica
+-- primeraActividadDecisiva bart irAVerAKrosty listaInfinitaActividades 
+-- Hasta el momento no encontró ninguna decisiva, por lo que no dio ninguna respuesta, pero sigue buscando...
